@@ -3,6 +3,20 @@ import {useState} from 'react'
 
 export default function Dashboard() {
 
+  const [activePanel, setActivePanel] = useState<string | null>(null);
+  const togglePanel = (panel:string) => {
+    if (panel === 'home') {
+      setActivePanel(null);
+      return;
+    }
+
+    if (panel === 'addChat') {
+      return;
+    }
+
+    setActivePanel((prev) => (prev===panel ? null : panel));
+  }
+
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'Hi there! How can I help you today?' },
   ]);
@@ -33,23 +47,38 @@ export default function Dashboard() {
 
       
       <div className="flex flex-1">
-        <aside className="w-40 bg-gray-100 p-4 border-r">
+      <aside className="w-40 bg-gray-100 p-4 border-r">
           <nav className="space-y-4">
-            <a href="#" className="block text-gray-800 hover:text-blue-600">
+            <button
+              onClick={() => togglePanel('home')}
+              className="block text-left w-full text-gray-800 hover:text-blue-600"
+            >
               Home
-            </a>
-            <a href="#" className="block text-gray-800 hover:text-blue-600">
-              Chat
-            </a>
-            <a href="#" className="block text-gray-800 hover:text-blue-600">
+            </button>
+            <button
+              onClick={() => togglePanel('caseList')}
+              className="block text-left w-full text-gray-800 hover:text-blue-600"
+            >
+              Case List
+            </button>
+            <button
+              onClick={() => togglePanel('addChat')}
+              className="block text-left w-full text-gray-800 hover:text-blue-600"
+            >
+              Add New Chat
+            </button>
+            <button
+              onClick={() => togglePanel('chatHistory')}
+              className="block text-left w-full text-gray-800 hover:text-blue-600"
+            >
               Chat History
-            </a>
-            <a href="#" className="block text-gray-800 hover:text-blue-600">
+            </button>
+            <button
+              onClick={() => togglePanel('files')}
+              className="block text-left w-full text-gray-800 hover:text-blue-600"
+            >
               My Files
-            </a>
-            <a href="#" className="block text-gray-800 hover:text-blue-600">
-              Dashboard
-            </a>
+            </button>
           </nav>
         </aside>
 
@@ -58,7 +87,7 @@ export default function Dashboard() {
     <main className="flex-1 p-6 bg-gray-50 space-y-6">
       {/* Chat Panel */}
       <section className="bg-white p-6 rounded-lg shadow flex flex-col h-[500px]">
-        <h2 className="text-lg text-black-700 font-semibold mb-4">Chat</h2>
+        <h2 className="text-lg text-black font-semibold mb-4">Chat</h2>
 
         {/* Chat message display */}
         <div className="flex-1 overflow-y-auto space-y-4 pr-2">
@@ -80,7 +109,7 @@ export default function Dashboard() {
         <form onSubmit={handleSubmit} className="mt-4 flex items-center gap-2">
           <input
             type="text"
-            className="flex-1 border rounded px-4 py-2 focus:outline-none focus:ring focus:border-blue-300"
+            className="flex-1 border rounded px-4 py-2 focus:outline-none focus:ring focus:border-blue-300 text-black placeholder-black-400"
             placeholder="Type your message..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -94,13 +123,24 @@ export default function Dashboard() {
         </form>
       </section>
     </main>
-
-          {/* Bottom panel
-          <section className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-2">Bottom Panel</h2>
-            <p className="text-gray-600">This is the content for the bottom panel.</p>
-          </section> */}
+      {activePanel && (
+            <aside className="w-64 bg-white border-l p-4 shadow-lg">
+              {activePanel === 'caseList' && <Panel title="Case List" content="Here are your cases." />}
+              {activePanel === 'chatHistory' && <Panel title="Chat History" content="View previous chats." />}
+              {activePanel === 'files' && <Panel title="My Files" content="Manage your uploaded files." />}
+            </aside>
+          )}
       </div>
+    </div>
+  );
+}
+
+
+function Panel({ title, content }: { title: string; content: string }) {
+  return (
+    <div>
+      <h2 className="text-lg font-semibold mb-2">{title}</h2>
+      <p className="text-gray-600">{content}</p>
     </div>
   );
 }
