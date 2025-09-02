@@ -79,6 +79,12 @@ export default function Dashboard() {
             >
               My Files
             </button>
+            <button
+              onClick={() => togglePanel('classes')}
+              className="block text-left w-full text-gray-800 hover:text-blue-600"
+            >
+              Switch Classes
+            </button>
           </nav>
         </aside>
 
@@ -128,6 +134,7 @@ export default function Dashboard() {
               {activePanel === 'caseList' && <Panel title="Case List" content="Here are your cases." />}
               {activePanel === 'chatHistory' && <Panel title="Chat History" content="View previous chats." />}
               {activePanel === 'files' && <Panel title="My Files" content="Manage your uploaded files." />}
+              {activePanel === 'classes' && <Panel title="Switch Classes" content="Switch to a different classes." />}
             </aside>
           )}
       </div>
