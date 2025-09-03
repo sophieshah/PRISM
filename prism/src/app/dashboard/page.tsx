@@ -22,19 +22,51 @@ export default function Dashboard() {
   ]);
 
   const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if(!input.trim()) return;
 
     const userMessage = { role: 'user', content: input };
-    setMessages([...messages, userMessage]);
+    const updatedMessages = ([...messages, userMessage]);
+    setMessages(updatedMessages);
     setInput('');
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({messages: updatedMessages}),
+      });
+  
+      const data = await res.json();
+      console.log("API response front-end: ", data);
+  
+      if (data?.reply) {
+        const assistantMessage = {
+          role: "assistant",
+          content: data.reply,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+      } else {
+        throw new Error("No reply in response");
+      }
+    } catch (err) {
+      console.error('API error:', err);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: 'There was an error processing your request.' },
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Top Navigation */}
+      {/* Top Navigation Bar*/}
       <header className="bg-white shadow px-6 py-4 flex justify-between items-center border-b">
         <h1 className="text-xl text-blue-700 font-bold ">PRISM</h1>
         <div className="flex items-center gap-4">
@@ -49,6 +81,7 @@ export default function Dashboard() {
       <div className="flex flex-1">
       <aside className="w-40 bg-gray-100 p-4 border-r">
           <nav className="space-y-4">
+            {/* Side Panel Navigation Bar */}
             <button
               onClick={() => togglePanel('home')}
               className="block text-left w-full text-gray-800 hover:text-blue-600"
